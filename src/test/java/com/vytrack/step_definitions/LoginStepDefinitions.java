@@ -1,22 +1,38 @@
 package com.vytrack.step_definitions;
 
+import com.vytrack.pages.LoginPage;
+import com.vytrack.utilities.BrowserUtils;
+import com.vytrack.utilities.ConfigurationReader;
+import com.vytrack.utilities.Driver;
 import io.cucumber.java.en.*;
+import org.junit.Assert;
 
 
 public class LoginStepDefinitions {
+    // write code here that turns the phrase above into concrete actions
+    LoginPage loginPage = new LoginPage();// create login page object
 
     @Given("user is on the login page")
     public void user_is_on_the_login_page() {
         System.out.println("I am on the login page");
+        Driver.get().get(ConfigurationReader.getProperty("url"));
     }
 
     @Then("user logs in as store manager")
     public void user_logs_in_as_store_manager() {
         System.out.println("Login as store manager");
+        //we read username and password from properties file
+        String userName = ConfigurationReader.getProperty("user_name");
+        String password = ConfigurationReader.getProperty("password");
+        loginPage.login(userName, password);
     }
-
+    //any string in "word" will become a parameter for step definitions method
+    //And user verifies that "Dashboard" page subtitle is displayed
     @Then("user verifies that {string} page subtitle is displayed")
     public void user_verifies_that_page_subtitle_is_displayed(String string) {
+        loginPage.waitUntilLoaderMaskDisappear();
+        BrowserUtils.wait(2);
+        Assert.assertEquals(string, loginPage.getPageSubTitle());
         System.out.println("Verify page subtitle: "+ string);
     }
 
@@ -30,5 +46,14 @@ public class LoginStepDefinitions {
         System.out.println("Login as sales manager");
     }
 
+    @Then("user enters {string} usernamne and {string} password")
+    public void user_enters_usernamne_and_password(String string, String string2) {
+        System.out.println("Login with "+ string+ " username and "+string2+" password");
+    }
+
+    @Then("user verifies that {string} message is displayed")
+    public void user_verifies_that_message_is_displayed(String string) {
+        System.out.println("Verify that warning message is displayed: "+string);
+    }
 
 }
