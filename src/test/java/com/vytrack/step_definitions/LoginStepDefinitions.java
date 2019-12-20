@@ -7,6 +7,8 @@ import com.vytrack.utilities.Driver;
 import io.cucumber.java.en.*;
 import org.junit.Assert;
 
+import java.util.Map;
+
 
 public class LoginStepDefinitions {
     // write code here that turns the phrase above into concrete actions
@@ -55,5 +57,12 @@ public class LoginStepDefinitions {
     public void user_verifies_that_message_is_displayed(String string) {
         System.out.println("Verify that warning message is displayed: "+string);
     }
+
+    @Then("user logs in as driver with following credentials")
+    public void user_logs_in_as_driver_with_following_credentials(Map<String, String> dataTable) {
+        System.out.println(dataTable);
+        loginPage.login(dataTable.get("username"), (dataTable.get("password")));
+    }
+
 
 }
