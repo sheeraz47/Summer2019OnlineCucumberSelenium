@@ -45,4 +45,16 @@ public class LoginPage extends BasePage{
         passwordInput.sendKeys(password, Keys.ENTER);
     }
 
+    public void login(String role){
+        if(role.equals("driver")){
+            //login as driver;
+        }else if(role.equals("store.manager")){
+            //login as store manager
+        }else if(role.equals("sales.manager")){
+            //login as sales manager
+        }
+    }
+
+
+
 }
