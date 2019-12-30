@@ -14,6 +14,7 @@ Feature: Login
     Then user logs in as store manager
     And user verifies that "Dashboard" page subtitle is displayed
 
+
   @driver
   Scenario: Login as driver
     Given user is on the login page
@@ -45,3 +46,41 @@ Feature: Login
       | username | user160     |
       | password | UserUser123 |
     And user verifies that "Quick Launchpad" page subtitle is displayed
+
+  @login_with_role
+  Scenario: Login as driver
+    Given user is on the login page
+    Then user logs in as "driver"
+
+  @login_with_role
+  Scenario: Login as sales manager
+    Given user is on the login page
+    Then user logs in as "sales manager"
+
+  @login_with_role
+  Scenario: Login as store manager
+    Given user is on the login page
+    Then user logs in as "store manager"
+
+    # merge the above three method with scenario outline
+  @login_with_role_ddt
+  Scenario Outline:DDT example, Login as <role>
+    Given user is on the login page
+    Then user logs in as "<role>"
+
+    Examples: roles
+      | role          |
+      | driver        |
+      | sales manager |
+      | store manager |
+
+  @login_with_credentials_ddt
+  Scenario Outline: DDT example with credentials, login as <username>
+    Given user is on the login page
+    Then user enters "<username>" usernamne and "<password>" password
+
+    Examples:
+      |  username     | password    |
+      | storemanager  | UserUser123 |
+      | salesmanager  | UserUser123 |
+      | user160       | UserUser123 |
