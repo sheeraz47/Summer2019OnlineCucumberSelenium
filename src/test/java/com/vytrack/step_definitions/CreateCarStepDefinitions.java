@@ -34,8 +34,10 @@ public class CreateCarStepDefinitions {
             createCarPage.colorElement.sendKeys(map.get("Color"));
             BrowserUtils.wait(2);
             if(row == dataTable.size()){
+                //if it's the last row click and save
                 createCarPage.clickSaveAndClose();
             }else {
+                //if its not the last row - click and save and add new
                 createCarPage.clickSaveAndAddNew();
             }
             BrowserUtils.wait(2);
