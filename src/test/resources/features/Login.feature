@@ -40,7 +40,7 @@ Feature: Login
     And user verifies that "Invalid user name or password." message is displayed
 
   @driver_with_data_table
-  Scenario: Login as driver(data table example}
+  Scenario: Login as driver(data table example)
     Given user is on the login page
     Then user logs in as driver with following credentials
       | username | user160     |
