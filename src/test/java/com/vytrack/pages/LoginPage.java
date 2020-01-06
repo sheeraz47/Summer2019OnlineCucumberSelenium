@@ -37,23 +37,25 @@ public class LoginPage extends BasePage{
      * reusable login method
      * just call this method to login
      * provide username and password as parameters
+     *
      * @param userName
      * @param password
      */
-    public void login(String userName, String password){
+    public void login(String userName, String password) {
         userNameInput.sendKeys(userName);
         //Keys.ENTER to replace login click
         passwordInput.sendKeys(password, Keys.ENTER);
     }
 
-    public void login(){
+    public void login() {
         login(ConfigurationReader.getProperty("username"), ConfigurationReader.getProperty("password"));
     }
 
-    public void login(String role){
+    public void login(String role) {
         String userName = "";
         String password = ConfigurationReader.getProperty("password");
-        switch (role){
+
+        switch (role) {
             case "driver":
                 userName = ConfigurationReader.getProperty("driver.username");
                 break;
@@ -68,7 +70,5 @@ public class LoginPage extends BasePage{
         }
         login(userName, password);
     }
-
-
 
 }
