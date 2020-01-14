@@ -70,16 +70,26 @@ public class Driver {
                     try {
                         ChromeOptions chromeOptions = new ChromeOptions();
                         chromeOptions.setCapability("platform", Platform.ANY);
-                        driverPool.set(new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), chromeOptions));
+                        driverPool.set(new RemoteWebDriver(new URL("http://ec2-18-212-156-23.compute-1.amazonaws.com:4444/wd/hub"), chromeOptions));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
+                case "remote_firefox":
+                    try {
+                        FirefoxOptions firefoxOptions = new FirefoxOptions();
+                        firefoxOptions.setCapability("platform", Platform.ANY);
+                        driverPool.set(new RemoteWebDriver(new URL("http://ec2-18-212-156-23.compute-1.amazonaws.com:4444/wd/hub"), firefoxOptions));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                 }
+
             }
+            //return corresponded to thread id webdriver object
+            return driverPool.get();
         }
-        //return corresponded to thread id webdriver object
-        return driverPool.get();
-    }
     public static void close() {
         driverPool.get().quit();
         driverPool.remove();
