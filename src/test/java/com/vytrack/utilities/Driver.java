@@ -1,6 +1,10 @@
 package com.vytrack.utilities;
 
+import io.appium.java_client.remote.MobileBrowserType;
+import io.appium.java_client.remote.MobileCapabilityType;
+import io.cucumber.java.hu.De;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebDriverException;
@@ -10,21 +14,32 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.ie.InternetExplorerDriver;
+import org.openqa.selenium.remote.BrowserType;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.safari.SafariDriver;
 
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Driver {
+    private static Logger logger = Logger.getLogger(Driver.class);
     private static ThreadLocal<WebDriver> driverPool = new ThreadLocal<>();
+    private static String userName = "sheeraz12";
+    private static String accessKey = "tNXpAaC8HR17YAHHdjZL";
+    private static final String URL = "https://" + userName + ":" + accessKey + "@hub-cloud.browserstack.com/wd/hub";
+
 
     private Driver() {
+
     }
 
     public static WebDriver get() {
         //if this thread doesn't have a web driver yet - create it and add to pool
         if (driverPool.get() == null) {
-            System.out.println("TRYING TO CREATE DRIVER");
+            logger.info("TRYING TO CREATE DRIVER");
             // this line will tell which browser should open based on the value from properties file
             String browserParamFromEnv = System.getProperty("browser");
             String browser = browserParamFromEnv == null ? ConfigurationReader.getProperty("browser") : browserParamFromEnv;
@@ -68,31 +83,78 @@ public class Driver {
                     break;
                 case "remote_chrome":
                     try {
-                        ChromeOptions chromeOptions = new ChromeOptions();
-                        chromeOptions.setCapability("platform", Platform.ANY);
-                        driverPool.set(new RemoteWebDriver(new URL("http://ec2-18-212-156-23.compute-1.amazonaws.com:4444/wd/hub"), chromeOptions));
+                        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+                        desiredCapabilities.setBrowserName(BrowserType.CHROME);
+                        desiredCapabilities.setCapability("platform", Platform.ANY);
+                        driverPool.set(new RemoteWebDriver(new URL("http://ec2-18-212-156-23.compute-1.amazonaws.com:4444/wd/hub"), desiredCapabilities));
                     } catch (Exception e) {
+                        logger.error(e.getMessage());
                         e.printStackTrace();
                     }
                     break;
                 case "remote_firefox":
                     try {
-                        FirefoxOptions firefoxOptions = new FirefoxOptions();
-                        firefoxOptions.setCapability("platform", Platform.ANY);
-                        driverPool.set(new RemoteWebDriver(new URL("http://ec2-18-212-156-23.compute-1.amazonaws.com:4444/wd/hub"), firefoxOptions));
+                        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+                        desiredCapabilities.setBrowserName(BrowserType.FIREFOX);
+                        driverPool.set(new RemoteWebDriver(new URL("http://ec2-18-212-156-23.compute-1.amazonaws.com:4444/wd/hub"), desiredCapabilities));
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                     break;
-                 }
+                case "mobile_chrome":
+                    try {
+                        //chrome options are used to parametrize browser
+                        ChromeOptions chromeOptions = new ChromeOptions();
+                        chromeOptions.addArguments("--incognito");
+                        DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
+                        desiredCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, "Pixel_2");
+                        desiredCapabilities.setCapability(MobileCapabilityType.VERSION, "7.0");
+                        desiredCapabilities.setCapability(MobileCapabilityType.BROWSER_NAME, MobileBrowserType.CHROME);
+                        desiredCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, Platform.ANDROID);
+                        desiredCapabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
 
+                        driverPool.set(new RemoteWebDriver(new URL("http://localhost:4723/wd/hub"), desiredCapabilities));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "mobile_chrome_remote":
+                    try {
+                        DesiredCapabilities caps = new DesiredCapabilities();
+                        caps.setCapability("browserName", "android");
+                        caps.setCapability("device", "Samsung Galaxy S10");
+                        caps.setCapability("realMobile", "true");
+                        caps.setCapability("os_version", "9.0");
+                        caps.setCapability("name", "VyTrack tests");
+                        driverPool.set(new RemoteWebDriver(new URL(URL), caps));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                case "mobile_safari_remote":
+                    try {
+                        DesiredCapabilities caps = new DesiredCapabilities();
+                        caps.setCapability("browserName", "safari");
+                        caps.setCapability("device", "iPhone 11 Pro Max");
+                        caps.setCapability("os_version", "13");
+                        caps.setCapability("realMobile", "true");
+                        caps.setCapability("name", "VyTrack tests");
+                        driverPool.set(new RemoteWebDriver(new URL(URL), caps));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    break;
+                default:
+                    throw new RuntimeException("Invalid browser name!");
             }
-            //return corresponded to thread id webdriver object
-            return driverPool.get();
+
         }
+        //return corresponded to thread id webdriver object
+        return driverPool.get();
+    }
+
     public static void close() {
         driverPool.get().quit();
         driverPool.remove();
     }
 }
-
